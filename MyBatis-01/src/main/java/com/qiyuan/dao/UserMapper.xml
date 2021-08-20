@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间namespace要绑定一个对应的Dao/Mapper接口，相当于实现它-->
+<mapper namespace="com.qiyuan.dao.UserMapper">
+    <!--select查询语句，返回类型要写全限定名-->
+    <select id="getUserList" resultType="com.qiyuan.entity.User">
+        select * from mybatis.user
+    </select>
+    <!--根据ID查询用户-->
+    <select id="getUserById" parameterType="int" resultType="com.qiyuan.entity.User">
+        select * from mybatis.user where id = #{id}
+    </select>
+    <!--模糊查询，记得写返回值类型-->
+    <select id="getUserLike" resultType="com.qiyuan.entity.User">
+        select * from  mybatis.user where name like #{name}
+    </select>
+    <!--新增一个用户-->
+    <!--对象中的属性可以直接取出来，要注意和对象中的属性名对应！-->
+    <insert id="addUser" parameterType="com.qiyuan.entity.User">
+        insert into mybatis.user (id, name, pwd) values (#{id},#{name},#{pwd})
+    </insert>
+    <!--使用Map-->
+    <insert id="addUser2" parameterType="map">
+        insert into mybatis.user (id, name, pwd) values (#{userid},#{userName},#{password})
+    </insert>
+    <!--删除一个用户-->
+    <delete id="deleteUser" parameterType="int">
+        delete from mybatis.user where id = #{id}
+    </delete>
+    <!--修改用户信息-->
+    <update id="updateUser" parameterType="com.qiyuan.entity.User">
+        update mybatis.user set name = #{name},pwd = #{pwd} where id = #{id}
+    </update>
+
+</mapper>

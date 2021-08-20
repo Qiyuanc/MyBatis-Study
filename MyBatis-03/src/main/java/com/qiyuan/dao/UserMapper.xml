@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间namespace要绑定一个对应的Dao/Mapper接口，相当于实现它-->
+<mapper namespace="com.qiyuan.dao.UserMapper">
+    <!--将结果集 UserMap 映射为 实体类 User-->
+    <resultMap id="UserMap" type="User">
+        <!-- colum 数据库字段 property 实体类属性-->
+        <!--相同的其实可以不写-->
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="password"/>
+    </resultMap>
+    <!--根据ID查询用户，只有一个参数可以不写参数类型-->
+    <!--使用结果集映射 UserMap-->
+    <select id="getUserById" resultMap="UserMap">
+        select * from mybatis.user where id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiyuan.dao.StudentMapper">
+
+    <!--思路：1.查询所有学生信息
+            2.根据查询到的学生信息查询对应的老师
+            本质上：子查询                     -->
+    <resultMap id="StudentTeacher" type="Student">
+        <!--属性和字段本身就能对应起来的，可以不写-->
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <!--复杂的属性，需要单独处理；对象 association 集合 collection-->
+        <!-- property 对象属性 colum 数据库列名-->
+        <!-- javaType 查询出来的对象 类似 resultType select 子查询-->
+        <association property="teacher" column="tid" javaType="Teacher" select="getTeacher"/>
+    </resultMap>
+
+    <select id="getStudent" resultMap="StudentTeacher">
+        select * from student
+    </select>
+    <!--根据 id 查询老师 只有一个参数不用写-->
+    <select id="getTeacher" resultType="Teacher">
+        select * from teacher where id = #{tid}
+    </select>
+
+    <!--按照结果嵌套处理-->
+    <!--查询的结果 本质上还是个 Student-->
+    <resultMap id="StudentTeacher2" type="Student">
+        <!--属性和字段本身就能对应起来的，可以不写-->
+        <result property="id" column="sid"/>
+        <result property="name" column="sname"/>
+        <!--对应，要查找的属性叫 teacher 它是 Teacher 类型的-->
+        <association property="teacher" javaType="Teacher">
+            <!--将查找出来的 tname 与 老师中的属性 name 对应-->
+            <result property="id" column="tid"/>
+            <result property="name" column="tname"/>
+        </association>
+    </resultMap>
+
+    <select id="getStudent2" resultMap="StudentTeacher2">
+        select s.id as sid, s.name as sname, t.id as tid, t.name as tname
+        from student s, teacher t
+        where s.tid = t.id
+    </select>
+
+</mapper>

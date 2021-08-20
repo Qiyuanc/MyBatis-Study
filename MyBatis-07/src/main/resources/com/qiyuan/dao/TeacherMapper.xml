@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiyuan.dao.TeacherMapper">
+
+    <!--查询对应的老师-->
+    <select id="getTeacher" resultMap="TeacherStudent">
+        select * from teacher where id = #{id}
+    </select>
+
+    <!--查出来就是个 Teacher 对象-->
+    <resultMap id="TeacherStudent" type="Teacher">
+        <!-- 一样的属性就不写了 -->
+        <result property="id" column="id"/>
+        <!--复杂的属性，需要单独处理；集合 collection-->
+        <!-- property 属性名 即 List<Student> students -->
+        <!-- javaType 指的是 java 类型，如此处是 ArrayList，ofType 指的是对应的泛型 -->
+        <!--这里的 type 是 Teacher 所以 column 中的 id 自然也是指 Teacher.id-->
+        <collection property="students" javaType="ArrayList" ofType="Student" column="id" select="getStudentByTeacherId"/>
+    </resultMap>
+
+    <!--子查询语句，怎么获得 id 呢？通过上面的 column 传进来-->
+    <select id="getStudentByTeacherId" resultType="Student">
+        select * from student where tid = #{id}
+    </select>
+
+    <!--按照结果嵌套处理-->
+    <select id="getTeacher2" resultMap="TeacherStudent2">
+        select s.id as sid, s.name as sname, t.id as tid, t.name as tname
+        from student s, teacher t
+        where s.tid = t.id and t.id = #{id}
+    </select>
+
+    <resultMap id="TeacherStudent2" type="Teacher">
+        <!--这里也不能偷懒！否则报错
+        Expected one result (or null) to be returned by selectOne() -->
+        <result property="id" column="tid"/>
+        <result property="name" column="tname"/>
+        <!-- ofType 属性的泛型 -->
+        <collection property="students" ofType="Student">
+            <!--对应学生的属性-->
+            <result property="id" column="sid"/>
+            <result property="name" column="sname"/>
+            <result property="tid" column="tid"/>
+        </collection>
+    </resultMap>
+
+</mapper>
